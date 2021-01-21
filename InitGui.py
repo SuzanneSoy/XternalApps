@@ -50,7 +50,8 @@ class XternalAppsWorkbench(Workbench):
         else:
             import Resources3
         import GIMPCommand
-        # import commands
+        import Embed
+        Embed.ExternalApps()
         self.list = ['GIMPCommand']
         self.appendMenu("ExternalApplications", self.list)
         self.appendToolbar("ExternalApplications", self.list)
