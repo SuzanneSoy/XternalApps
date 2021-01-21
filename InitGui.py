@@ -1,9 +1,10 @@
 import sys
 
-class XternalAppsWorkbench(Workbench):
-    MenuText = "XternalApps"
-    ToolTip = "Embeds external Applications in FreeCAD"
-    Icon = """
+print("AAA")
+import ExternalAppsList
+print("BBB")
+
+myIcon = """
         /* XPM */
         static char * icon_xpm[] = {
         "16 16 15 1",
@@ -40,8 +41,20 @@ class XternalAppsWorkbench(Workbench):
         "................"};
         """
 
+print("CCC")
+class XternalAppsWorkbench(Workbench):
+    """Subclasses must implement the appName attribute"""
+    global myIcon
+    global XternalAppsWorkbench
+
+    ToolTip = "Embeds external Applications in FreeCAD"
+    Icon = myIcon
+
     def __init__(self):
-        super(self.__class__, self).__init__()
+        print('inside XternalAppsWorkbench __init__()')
+        self.MenuText = "XternalApps: " + self.appName
+        super(XternalAppsWorkbench, self).__init__()
+        print('finished XternalAppsWorkbench __init__()')
 
     def Initialize(self):
         print('Initialize')
@@ -52,7 +65,7 @@ class XternalAppsWorkbench(Workbench):
         import GIMPCommand
         import Embed
         Embed.ExternalApps()
-        self.list = ['GIMPCommand']
+        self.list = [self.appName + 'Command']
         self.appendMenu("ExternalApplications", self.list)
         self.appendToolbar("ExternalApplications", self.list)
 
@@ -70,4 +83,17 @@ class XternalAppsWorkbench(Workbench):
     def GetClassName(self):
         return "Gui::PythonWorkbench"
 
-Gui.addWorkbench(XternalAppsWorkbench())
+print("DDD")
+def addAppWorkbench(appName):
+    workbenchClass = type(
+        "XternalApps" + appName + "Workbench",
+        (XternalAppsWorkbench,), { 'appName': appName })
+    Gui.addWorkbench(workbenchClass())
+
+print("EEE")
+print(repr(dir(ExternalAppsList)))
+print(repr(ExternalAppsList.apps))
+for app in ExternalAppsList.apps:
+    print("FFF " + repr(app))
+    addAppWorkbench(app)
+print("GGG")

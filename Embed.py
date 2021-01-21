@@ -6,37 +6,13 @@ import re
 from PySide import QtGui
 from PySide import QtCore
 
-class Tool():
-    def __init__(self, name, *, start_command_and_args, xwininfo_filter_re, extra_xprop_filter):
-        self.name = name
-        self.start_command_and_args = start_command_and_args
-        self.xwininfo_filter_re = re.compile(xwininfo_filter_re)
-        self.extra_xprop_filter = extra_xprop_filter
-
-class Tools():
-    def __init__(self, *tools):
-        self.__dict__ = {tool.name: tool for tool in tools}
-    def __getitem__(self, k): return self.__dict__[k]
-
-# tool-specific infos:
-tools = Tools(
-    Tool('Mousepad',
-        start_command_and_args = ['mousepad', '--disable-server'],
-        xwininfo_filter_re = r'mousepad',
-        extra_xprop_filter = lambda processId, windowId, i: True),
-    Tool('Inkscape',
-        start_command_and_args = ['inkscape'],
-        xwininfo_filter_re = r'inkscape',
-        extra_xprop_filter = lambda processId, windowId, i: x11prop(windowId, 'WM_STATE',  'WM_STATE') is not None),
-    Tool('GIMP',
-        start_command_and_args = ['env', '-i', 'DISPLAY=:0', '/home/suzanne/perso/dotfiles/nix/result/bin/gimp', '--new-instance'],
-        xwininfo_filter_re = r'gimp',
-        extra_xprop_filter = lambda processId, windowId, i: x11prop(windowId, 'WM_STATE',  'WM_STATE') is not None))
+import ExternalAppsList
+from MyX11Utils import *
 
 class EmbeddedWindow(QtCore.QObject):
-    def __init__(self, tool, externalAppInstance, processId, windowId):
+    def __init__(self, app, externalAppInstance, processId, windowId):
         super(EmbeddedWindow, self).__init__()
-        self.tool = tool
+        self.app = app
         self.externalAppInstance = externalAppInstance
         self.processId = processId
         self.windowId = windowId
@@ -50,7 +26,7 @@ class EmbeddedWindow(QtCore.QObject):
         self.xwd.setBaseSize(640,480)
         self.mwx.setBaseSize(640,480)
         self.mdiSub.setBaseSize(640,480)
-        self.mdiSub.setWindowTitle(tool.name)
+        self.mdiSub.setWindowTitle(app.name)
         self.mdiSub.show()
         #self.xw.installEventFilter(self)
     def eventFilter(self, obj, event):
@@ -62,25 +38,6 @@ class EmbeddedWindow(QtCore.QObject):
 
 # <optional spaces> <digits (captured in group 1)> <optional spaces> "<quoted string>"  <optional spaces> : <anything>
 xwininfo_re = re.compile(r'^\s*([0-9]+)\s*"[^"]*"\s*:.*$')
-
-def x11stillAlive(windowId):
-    try:
-        subprocess.check_output(['xprop', '-id', str(windowId), '_NET_WM_PID'])
-        return True
-    except:
-        return False
-
-def x11prop(windowId, prop, type):
-    try:
-        output = subprocess.check_output(['xprop', '-id', str(windowId), prop]).decode('utf-8', 'ignore').split('\n')
-    except subprocess.CalledProcessError as e:
-        output = []
-    xprop_re = re.compile(r'^' + re.escape(prop) + r'\(' + re.escape(type) + r'\)((:)| =(.*))$')
-    for line in output:
-        trymatch = xprop_re.match(line)
-        if trymatch:
-            return trymatch.group(2) or trymatch.group(3)
-    return None
 
 def try_pipe_lines(commandAndArguments):
     try:
@@ -101,17 +58,17 @@ def deleted(widget):
         return True
 
 class ExternalAppInstance(QtCore.QObject):
-    def __init__(self, toolName):
+    def __init__(self, appName):
         super(ExternalAppInstance, self).__init__()
-        self.tool = tools[toolName]
+        self.app = ExternalAppsList.apps[appName]
         # Start the application
         # TODO: popen_process shouldn't be exposed to in-document scripts, it would allow them to redirect output etc.
-        print('Starting ' + ' '.join(self.tool.start_command_and_args))
-        self.popen_process = subprocess.Popen(self.tool.start_command_and_args)
-        self.toolProcessIds = [self.popen_process.pid]
+        print('Starting ' + ' '.join(self.app.start_command_and_args))
+        self.popen_process = subprocess.Popen(self.app.start_command_and_args)
+        self.appProcessIds = [self.popen_process.pid]
         self.initWaitForWindow()
         self.foundWindows = dict()
-        setattr(FreeCAD.ExternalApps, self.tool.name, self)
+        setattr(FreeCAD.ExternalApps, self.app.name, self)
 
     def initWaitForWindow(self):
         self.TimeoutHasOccurred  = False # for other scritps to know the status
@@ -135,14 +92,14 @@ class ExternalAppInstance(QtCore.QObject):
     def attemptToFindWindowWrapped(self):
         # use decode('utf-8', 'ignore') to use strings instead of byte strings and discard ill-formed unicode in case these tool doesn't sanitize their output
         for line in try_pipe_lines(['xwininfo', '-root', '-tree', '-int']):
-            if self.tool.xwininfo_filter_re.search(line):
+            if self.app.xwininfo_filter_re.search(line):
                 windowId = int(xwininfo_re.match(line).group(1))
                 # use decode('utf-8', 'ignore') to use strings instead of byte strings and discard ill-formed unicode in case this tool doesn't sanitize their output
                 xprop_try_process_id = x11prop(windowId, '_NET_WM_PID', 'CARDINAL')
                 if xprop_try_process_id:
                     processId = int(xprop_try_process_id) # TODO try parse int and catch failure
-                    if processId in self.toolProcessIds:
-                        if self.tool.extra_xprop_filter(processId, windowId, len(self.foundWindows)):
+                    if processId in self.appProcessIds:
+                        if self.app.extra_xprop_filter(processId, windowId, len(self.foundWindows)):
                             self.foundWindow(processId, windowId)
 
         if self.elapsed.elapsed() > self.startupTimeout:
@@ -151,7 +108,7 @@ class ExternalAppInstance(QtCore.QObject):
 
     def foundWindow(self, processId, windowId):
         if windowId not in self.foundWindows.keys():
-            self.foundWindows[windowId] = EmbeddedWindow(self.tool, self, processId, windowId)
+            self.foundWindows[windowId] = EmbeddedWindow(self.app, self, processId, windowId)
             # TODO: find an event instead of polling
             for w in self.foundWindows.values():
                 #if not deleted(xw) and not xw.isActive():
