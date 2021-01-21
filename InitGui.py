@@ -64,8 +64,8 @@ class XternalAppsWorkbench(Workbench):
         print('Deactivated')
         pass
 
-    def ContextMenu(self):
-        pass
+    #def ContextMenu(self):
+    #    pass
 
     def GetClassName(self):
         return "Gui::PythonWorkbench"
