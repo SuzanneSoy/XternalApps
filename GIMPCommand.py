@@ -7,21 +7,25 @@ from PySide import QtCore
 import Embed
 
 class GIMPCommand():
+    def __init__(self, appName):
+        self.appName = appName
+
     def GetResources(self):
         return {
             'Pixmap':   ':/icons/GIMP.svg',
-            'Accel':    "Shit+G",
-            'MenuText': "Menu text",
-            'ToolTip':  "Tooltip",
+            'Accel':    "Shit+E", # E for Embed
+            'MenuText': "Start " + self.appName,
+            'ToolTip':  "Start " + self.appName,
         }
 
     def Activated(self):
-        print("Command activated")
-        p = Embed.ExternalAppInstance('GIMP')
+        p = Embed.ExternalAppInstance(self.appName)
         p.waitForWindow()
 
     def IsActive(self):
         # return false to grey out the command in the menus, toolbars etc.
         return True
 
-Gui.addCommand('GIMPCommand', GIMPCommand())
+Gui.addCommand('MousepadCommand', GIMPCommand('Mousepad'))
+Gui.addCommand('InkscapeCommand', GIMPCommand('Inkscape'))
+Gui.addCommand('GIMPCommand', GIMPCommand('GIMP'))

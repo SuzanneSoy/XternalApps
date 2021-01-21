@@ -44,17 +44,14 @@ class XternalAppsWorkbench(Workbench):
     global myIcon
     global XternalAppsWorkbench
 
-    ToolTip = "Embeds external Applications in FreeCAD"
     Icon = myIcon
 
     def __init__(self):
-        print('inside XternalAppsWorkbench __init__()')
         self.MenuText = "XternalApps: " + self.appName
+        self.ToolTip = "Embeds " + self.appName + " in FreeCAD"
         super(XternalAppsWorkbench, self).__init__()
-        print('finished XternalAppsWorkbench __init__()')
 
     def Initialize(self):
-        print('Initialize')
         if sys.version_info[0] == 2:
             import Resources2
         else:
@@ -67,11 +64,9 @@ class XternalAppsWorkbench(Workbench):
         self.appendToolbar("ExternalApplications", self.list)
 
     def Activated(self):
-        print('Activated')
         pass
 
     def Deactivated(self):
-        print('Deactivated')
         pass
 
     #def ContextMenu(self):
