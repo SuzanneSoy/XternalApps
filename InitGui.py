@@ -1,8 +1,6 @@
 import sys
 
-print("AAA")
 import ExternalAppsList
-print("BBB")
 
 myIcon = """
         /* XPM */
@@ -41,7 +39,6 @@ myIcon = """
         "................"};
         """
 
-print("CCC")
 class XternalAppsWorkbench(Workbench):
     """Subclasses must implement the appName attribute"""
     global myIcon
@@ -83,17 +80,11 @@ class XternalAppsWorkbench(Workbench):
     def GetClassName(self):
         return "Gui::PythonWorkbench"
 
-print("DDD")
 def addAppWorkbench(appName):
     workbenchClass = type(
         "XternalApps" + appName + "Workbench",
         (XternalAppsWorkbench,), { 'appName': appName })
     Gui.addWorkbench(workbenchClass())
 
-print("EEE")
-print(repr(dir(ExternalAppsList)))
-print(repr(ExternalAppsList.apps))
 for app in ExternalAppsList.apps:
-    print("FFF " + repr(app))
     addAppWorkbench(app)
-print("GGG")
