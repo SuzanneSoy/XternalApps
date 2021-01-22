@@ -1,3 +1,4 @@
+import os
 import FreeCAD
 import FreeCADGui as Gui
 import subprocess
@@ -11,6 +12,7 @@ from MyX11Utils import *
 class App():
     def __init__(self, name, *, start_command_and_args, xwininfo_filter_re, extra_xprop_filter):
         self.name = name
+        self.Icon = os.path.dirname(__file__) + '/icons/' + self.name + '.svg'
         self.start_command_and_args = start_command_and_args
         self.xwininfo_filter_re = re.compile(xwininfo_filter_re)
         self.extra_xprop_filter = extra_xprop_filter
