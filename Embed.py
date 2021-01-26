@@ -9,6 +9,9 @@ from PySide import QtCore
 import ExternalAppsList
 from MyX11Utils import *
 
+#class MyMdiSubWindow(QMdiSubWindow):
+#    def closeEvent
+
 class EmbeddedWindow(QtCore.QObject):
     def __init__(self, app, externalAppInstance, processId, windowId):
         super(EmbeddedWindow, self).__init__()
@@ -21,26 +24,84 @@ class EmbeddedWindow(QtCore.QObject):
         self.xw.setFlags(QtGui.Qt.FramelessWindowHint)
         self.xwd = QtGui.QWidget.createWindowContainer(self.xw)
         self.mwx = QtGui.QMainWindow()
-        self.mwx.layout().addWidget(self.xwd)
+        #self.mwx.layout().addWidget(self.xwd)
+        self.mwx.setCentralWidget(self.xwd)
         self.mdiSub = self.mdi.addSubWindow(self.xwd)
         self.xwd.setBaseSize(640,480)
         self.mwx.setBaseSize(640,480)
         self.mdiSub.setBaseSize(640,480)
         self.mdiSub.setWindowTitle(app.name)
         self.mdiSub.show()
-        #self.xw.installEventFilter(self)
+        self.xwd.installEventFilter(self)
+        self.mwx.installEventFilter(self)
+        self.mdiSub.installEventFilter(self)
+        self.timer = QtCore.QTimer(self)
+        self.timer.timeout.connect(self.pollWindowClosed)
+        self.timer.start(1000)
+
     def eventFilter(self, obj, event):
         # This doesn't seem to work, some events occur but no the close one.
-        if event.type() == QtCore.QEvent.Close:
-            mdiSub.close()
-        return False
+        if event.type() == QtCore.QEvent.Close and x11stillAlive(self.windowId):
+            #xdotool closes the window without asking for confirmation
+            #subprocess.Popen(['xdotool', 'windowclose', str(self.windowId)])
 
+            # use decode('utf-8', 'ignore') to use strings instead of
+            # byte strings and discard ill-formed unicode in case this
+            # tool doesn't sanitize their output
+            xwininfo_output = subprocess.check_output(['xwininfo', '-root', '-int']).decode('utf-8', 'ignore').split('\n')
+            root_id = None
+            for line in xwininfo_output:
+                match = re.compile(r'^xwininfo: Window id: ([0-9]+)').match(line)
+                if match:
+                    root_id = match.group(1)
+                    break
+            if root_id is not None:
+                # detach
+                subprocess.Popen(['xdotool', 'windowreparent', str(self.windowId), root_id])
+                # send friendly close signal
+                subprocess.Popen(['wmctrl', '-i', '-c', str(self.windowId)])
+                # Cleanup
+                # TODO: destroy self.xw and .xwd if possible to avoid a leak
+                self.xw.setParent(None)
+                self.xwd.setParent(None)
+                self.timer.stop()
+                # remove from dictionary of found windows
+                self.externalAppInstance.foundWindows.pop(self.windowId, None)
+                # avoid GC
+                self.externalAppInstance.closedWindows[self.windowId] = self
+                # re-attach in case it didn't close (confirmation dialog etc.)
+                print('waitForWindow')
+                self.externalAppInstance.waitForWindow()
+#                try:
+#                    self.xw = QtGui.QWindow.fromWinId(self.windowId)
+#                    self.xwd = QtGui.QWidget.createWindowContainer(self.xw)
+#                    self.mwx.setCentralWidget(self.xwd)
+#                except Exception as e:
+#                    print(repr(e))
+#                    pass
+            else:
+                event.ignore()
+            return True
+        else:
+            return False
+
+    @QtCore.Slot()
+    def pollWindowClosed(self):
+        # TODO: find an event instead of polling
+        if not x11stillAlive(self.windowId) and not deleted(self.mdiSub):
+            self.mdiSub.close()
+            self.timer.stop()
+
+    # TODO: also kill or at least detach on application exit
 
 # <optional spaces> <digits (captured in group 1)> <optional spaces> "<quoted string>"  <optional spaces> : <anything>
 xwininfo_re = re.compile(r'^\s*([0-9]+)\s*"[^"]*"\s*:.*$')
 
 def try_pipe_lines(commandAndArguments):
     try:
+        # use decode('utf-8', 'ignore') to use strings instead of
+        # byte strings and discard ill-formed unicode in case this
+        # tool doesn't sanitize their output
         return subprocess.check_output(commandAndArguments).decode('utf-8', 'ignore').split('\n')
     except:
         return []
@@ -68,6 +129,7 @@ class ExternalAppInstance(QtCore.QObject):
         self.appProcessIds = [self.popen_process.pid]
         self.initWaitForWindow()
         self.foundWindows = dict()
+        self.closedWindows = dict()
         setattr(FreeCAD.ExternalApps, self.app.name, self)
 
     def initWaitForWindow(self):
@@ -115,10 +177,10 @@ class ExternalAppInstance(QtCore.QObject):
         self.foundWindow(processId, windowId)
 
     def foundWindow(self, processId, windowId):
+        print('found ' + str(windowId))
         if windowId not in self.foundWindows.keys():
             self.foundWindows[windowId] = EmbeddedWindow(self.app, self, processId, windowId)
-            # TODO: find an event instead of polling
-            for w in self.foundWindows.values():
-                #if not deleted(xw) and not xw.isActive():
-                if not x11stillAlive(w.windowId):
-                    w.mdiSub.close()
+#            for w in self.foundWindows.values():
+#                #if not deleted(xw) and not xw.isActive():
+#                if not x11stillAlive(w.windowId):
+#                    w.mdiSub.close()
