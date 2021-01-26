@@ -28,5 +28,5 @@ class AppCommand():
         # return false to grey out the command in the menus, toolbars etc.
         return True
 
-for appName in ExternalAppsList.apps:
+def createCommands(appName):
     Gui.addCommand('ExternalAppsOpen' + appName + 'Command', AppCommand(appName))

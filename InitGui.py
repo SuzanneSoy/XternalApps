@@ -52,10 +52,20 @@ class XternalAppsWorkbench(Workbench):
         super(XternalAppsWorkbench, self).__init__()
 
     def Initialize(self):
+        # Load commands
         import AppCommand
+        import AppTools
         import Embed
         Embed.ExternalApps()
-        self.list = ['ExternalAppsOpen' + self.appName + 'Command']
+        AppCommand.createCommands(self.appName)
+        AppTools.createCommands(self.appName)
+
+        # List of commands for this workbench
+        self.list = ['ExternalAppsOpen' + self.appName + 'Command'] \
+                    + ['ExternalAppsTool' + self.appName + toolName + 'Command'
+                       for toolName in ExternalAppsList.apps[self.appName].Tools]
+
+        # Create menus and toolbars
         self.appendMenu("ExternalApplications", self.list)
         self.appendToolbar("ExternalApplications", self.list)
 

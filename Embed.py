@@ -106,6 +106,7 @@ def try_pipe_lines(commandAndArguments):
     except:
         return []
 
+# TODO: this is just a quick & dirty way to attach a field to the FreeCad object
 class ExternalApps():
     def __init__(self):
         setattr(FreeCAD, 'ExternalApps', self)
