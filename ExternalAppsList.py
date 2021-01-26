@@ -6,8 +6,24 @@ import PySide
 import re
 from PySide import QtGui
 from PySide import QtCore
+from xml.etree import ElementTree
 
 from MyX11Utils import *
+
+ns={
+#  'my':"http://github.com/jsmaniac/XternalApps/myTool",
+  'XternalApps':"http://github.com/jsmaniac/XternalApps",
+  'xforms':"http://www.w3.org/2002/xforms",
+  'xsd':"http://www.w3.org/2001/XMLSchema",
+}
+
+def getSingletonFromXML(xml, path):
+    # TODO: error-checking and a proper message here if there is no matching element or more than one.
+    elem = xml.find(path, ns)
+    if elem is None:
+        raise Exception('Error: could not find ' + path + ' in tool xforms')
+    else:
+        return elem
 
 class Tool():
     def __init__(self, *, appName, toolName, xForms, toolTip, icon, extendedDescription, openHelpFile):
@@ -22,13 +38,15 @@ class Tool():
     @staticmethod
     def fromXForms(*, appName, xForms):
         # TODO: implement a tool cache which avoids parsing the XML and memorizes the name and icon
+        from xml.etree import ElementTree
+        xml = ElementTree.parse(xForms).getroot()
+
         return Tool(appName=appName,
-                    toolName = "from XForms … TODO",
+                    toolName = getSingletonFromXML(xml, './XternalApps:name').text,
                     xForms = xForms,
-                    toolTip = "from XForms … TODO",
-                    # TODO: get the icon from the XForms file
-                    icon = os.path.dirname(__file__) + '/icons/' + appName + '.svg',
-                    extendedDescription = "from XForms … TODO",
+                    toolTip = getSingletonFromXML(xml, './XternalApps:tooltip').text,
+                    icon = os.path.dirname(__file__) + '/icons/' + appName + '/' + getSingletonFromXML(xml, './XternalApps:icon').text,
+                    extendedDescription = getSingletonFromXML(xml, './XternalApps:extended-description').text,
                     openHelpFile = None)
 
 class ToolsClass():
@@ -47,7 +65,7 @@ class App():
         self.start_command_and_args = start_command_and_args
         self.xwininfo_filter_re = re.compile(xwininfo_filter_re)
         self.extra_xprop_filter = extra_xprop_filter
-        self.Tools = ToolsClass([Tool.fromXForms(appName=self.name, xForms=t) for t in tools])
+        self.Tools = ToolsClass([Tool.fromXForms(appName=self.name, xForms=os.path.dirname(__file__) + '/' + t) for t in tools])
 
 class Apps():
     def __init__(self, *apps):
