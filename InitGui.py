@@ -54,11 +54,11 @@ class XternalAppsWorkbench(Workbench):
     def Initialize(self):
         # Load commands
         import AppCommand
-        import AppTools
+        import ToolCommand
         import Embed
         Embed.ExternalApps()
         AppCommand.createCommands(self.appName)
-        AppTools.createCommands(self.appName)
+        ToolCommand.createCommands(self.appName)
 
         # List of commands for this workbench
         self.list = ['ExternalAppsOpen' + self.appName + 'Command'] \
