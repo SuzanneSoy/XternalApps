@@ -25,6 +25,7 @@
     <xforms:bind ref="my:option1" type="xsd:decimal" required="true()"/>
     <xforms:bind ref="my:option2" type="xsd:string" required="true()"/>
     <xforms:submission action="myTool.py" method="exec-double-dash" />
+    <XternalApps:returns method="pipe" type="image/svg+xml" />
   </xforms:model>
   <!-- Description of the user interface follows: -->
   <xforms:group>
