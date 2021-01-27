@@ -21,26 +21,29 @@
       <xforms:bind ref="my:svgfile" type="xsd:anyURI" required="true()"/>
     -->
     <!-- use XternalApps:pipe to have the file piped directly into the command being run -->
-    <xforms:bind ref="my:svgfile" type="XternalApps:pipe" required="true()"/>
+    <xforms:bind ref="my:svgfile" type="mime:image/svg+xml" required="true()"/>
     <xforms:bind ref="my:option1" type="xsd:decimal" required="true()"/>
     <xforms:bind ref="my:option2" type="xsd:string" required="true()"/>
-    <xforms:submission action="myTool.py" method="exec-double-dash" />
-    <XternalApps:returns method="pipe" type="image/svg+xml" />
+    <!--<xforms:submission action="myTool.py" method="exec-double-dash" />-->
+    <XternalApps:command medhod="exec" style="double-dash">
+      <XternalApps:exception ref="my:svgfile" style="pipe" />
+      <XternalApps:returns style="pipe" type="image/svg+xml" />
+    </XternalApps:command>
   </xforms:model>
   <!-- Description of the user interface follows: -->
   <xforms:group>
     <xforms:label>Page 1</xforms:label>
-    <xforms:input ref="option1" label="Option One ∀"/>
-    <xforms:input ref="option2" label="Option Two π"/>
-    <xforms:upload ref="svgfile" accept="image/svg+xml">
+    <xforms:input ref="my:option1" label="Option One ∀"/>
+    <xforms:input ref="my:option2" label="Option Two π"/>
+    <xforms:upload ref="my:svgfile" accept="image/svg+xml">
       <xforms:label>Input image</xforms:label>
       <xforms:filename ref="@filename" />
     </xforms:upload>
   </xforms:group>
   <xforms:group>
     <xforms:label>Page 2</xforms:label>
-    <xforms:input ref="option2" label="Option Two"/>
-    <xforms:select1 ref="option3" label="Option Three">
+    <xforms:input ref="my:option2" label="Option Two"/>
+    <xforms:select1 ref="my:option3" label="Option Three">
       <xforms:item label="Foo label" value="foo"/>
       <xforms:item label="Bar label" value="bar"/>
     </xforms:select1>

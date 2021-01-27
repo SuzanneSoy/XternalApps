@@ -7,6 +7,7 @@ from PySide import QtCore
 
 import ExternalAppsList
 import Embed
+import XternalAppsParametricTool
 
 class ToolCommand():
     def __init__(self, appName, toolName):
@@ -21,7 +22,7 @@ class ToolCommand():
         }
 
     def Activated(self):
-        print("tool " + self.Tool.ToolName + " of " + self.Tool.AppName + " was activated with xforms" + str(self.Tool.XForms))
+        XternalAppsParametricTool.create(self.Tool.AppName, self.Tool.ToolName)
 
     def IsActive(self):
         # return false to grey out the command in the menus, toolbars etc.
