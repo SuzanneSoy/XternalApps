@@ -26,7 +26,7 @@ class ToolCommand():
 
     def IsActive(self):
         # return false to grey out the command in the menus, toolbars etc.
-        return True
+        return App.ActiveDocument is not None
 
 def createCommands(appName):
     for toolName in ExternalAppsList.apps[appName].Tools:
