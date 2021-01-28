@@ -1,15 +1,22 @@
 import FreeCAD as App
+import FreeCADGui
 #from xml.etree import ElementTree
 from lxml import etree
 import ExternalAppsList
 from ToolXML import *
 import re
 
+def CreateCommand(appName, toolName):
+    App.ActiveDocument.openTransaction('Create parametric %s from %s'%(toolName, appName))
+    FreeCADGui.addModule("XternalAppsParametricTool")
+    FreeCADGui.doCommand("XternalAppsParametricTool.create(%s, %s)"%(repr(appName), repr(toolName)))
+    App.ActiveDocument.commitTransaction()
+    return obj
+
 def create(appName, toolName):
     name = appName + toolName
     obj = App.ActiveDocument.addObject("App::DocumentObjectGroupPython", name)
     XternalAppsParametricTool(obj, appName, toolName)
-    return obj
 
 # TODO: read-only/immutable
 typeToFreeCADTypeDict = {
