@@ -87,10 +87,10 @@ class XternalAppsParametricTool():
         xml, types, modelInstance, inputs = self.interpretXML()
         for (input, modelElement, type) in inputs.values():
             simpleName = re.sub(r'( |[^-a-zA-Z0-9])+', ' ', input.attrib['label']).title().replace(' ', '')
-            input.xpath('ancestor-or-self::group')
+            group = "/".join(input.xpath('ancestor-or-self::xforms:group/xforms:label/text()', namespaces=ns)) or None
             obj.addProperty(typeToFreeCADType(type),
                             simpleName,
-                            "/".join(input.xpath('ancestor-or-self::xforms:group/xforms:label/text()', namespaces=ns)) or None,
+                            group,
                             input.attrib['label'] + '\nA value of type ' + type)
 
     @property
