@@ -11,12 +11,12 @@ def CreateCommand(appName, toolName):
     FreeCADGui.addModule("XternalAppsParametricTool")
     FreeCADGui.doCommand("XternalAppsParametricTool.create(%s, %s)"%(repr(appName), repr(toolName)))
     App.ActiveDocument.commitTransaction()
-    return obj
 
 def create(appName, toolName):
     name = appName + toolName
     obj = App.ActiveDocument.addObject("App::DocumentObjectGroupPython", name)
     XternalAppsParametricTool(obj, appName, toolName)
+    return obj
 
 # TODO: read-only/immutable
 typeToFreeCADTypeDict = {
