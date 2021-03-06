@@ -1,33 +1,3 @@
-class Foo():
-    def __del__(self):
-        def catchSplash():
-            import PySide
-            from PySide import QtGui, QtCore
-            import pprint
-            print(QtGui.QApplication.topLevelWidgets())
-            sps = [w for w in QtGui.QApplication.topLevelWidgets() if 'PySide2.QtWidgets.QWidget' in str(w)]
-            if len(sps) == 1:
-              sps[0].hide()
-            print("toplevel=")
-            pprint.pprint(QtGui.QApplication.topLevelWidgets())
-            print("children=")
-            pprint.pprint([x.children() for x in sps])
-
-        print("del")
-        catchSplash()
-
-        import PySide
-        from PySide import QtGui, QtCore
-        tm = QtCore.QTimer()
-        tm.timeout.connect(lambda: print(catchSplash))
-        tm.start(100)
-
-        #import FreeCAD
-        #setattr(FreeCAD, "stealsplash", tm)
-
-#foo = Foo()
-print("IN stealsplash")
-
 Splash = None
 
 def isDeleted(obj):
@@ -39,9 +9,8 @@ def isDeleted(obj):
 
 def steal():
     def checkSplashStillHere(official, splash, tm):
-        print("check")
         if isDeleted(official):
-            print("delete extra splash")
+            """delete extra splash"""
             tm.stop()
             splash.hide()
             # TODO: properly de-allocate on the FreeCAD object
@@ -50,8 +19,6 @@ def steal():
         global Splash
         import PySide
         from PySide import QtGui, QtCore
-        import pprint
-        print(QtGui.QApplication.topLevelWidgets())
         sps = [w for w in QtGui.QApplication.topLevelWidgets() if 'PySide2.QtWidgets.QWidget' in str(w)]
         if len(sps) == 1:
             # This does not work
@@ -77,10 +44,4 @@ def steal():
             import FreeCAD
             setattr(FreeCAD, "Splash", (sps[0], splash, tm))
 
-        #print("toplevel=")
-        #pprint.pprint(QtGui.QApplication.topLevelWidgets())
-        #print("children=")
-        #pprint.pprint([x.children() for x in sps])
-
-    print("del")
     catchSplash()
