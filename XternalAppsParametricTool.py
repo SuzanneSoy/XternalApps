@@ -77,7 +77,8 @@ class XternalAppsParametricTool():
                 # TODO: is it safe to pass input unprotected here?
                 modelElement = instanceDocument.find(input.attrib['ref'], namespaces=input.nsmap)
                 if modelElement is None:
-                    raise Exception('Could not find ' + input.attrib['ref'] + ' in instance document with namespaces=' + repr(input.nsmap))
+                    raise Exception('Could not find ' + input.attrib['ref'] \
+                                    + ' in instance document with namespaces=' + repr(input.nsmap))
                 type = types[instanceDocument.getpath(modelElement)]
                 inputs[xml.getpath(input)] = (input, modelElement, type)
         return (xml, types, modelInstance, inputs)
