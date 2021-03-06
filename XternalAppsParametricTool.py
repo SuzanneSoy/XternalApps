@@ -48,6 +48,9 @@ class XternalAppsParametricTool():
         self.createPropertiesFromXML(obj)
 
     def interpretXML(self):
+        """Parse the self.Tool.XForms document, and return the parsed xml,
+        a dictionary types[path] = "type", and a dictionary
+        inputs[path] = (xml_input_element, xml_model_element, type)."""
         types = {}
         modelInstance = {}
         inputs = {}
