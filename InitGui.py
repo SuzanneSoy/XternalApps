@@ -2,6 +2,9 @@ import sys
 
 import ExternalAppsList
 
+import StealSplash
+StealSplash.steal()
+
 myIcon = """
         /* XPM */
         static char * icon_xpm[] = {
