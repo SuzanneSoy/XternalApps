@@ -24,6 +24,7 @@
     <xforms:bind ref="my:svgfile" type="mime:image/svg+xml" required="true()"/>
     <xforms:bind ref="my:option1" type="xsd:decimal" required="true()"/>
     <xforms:bind ref="my:option2" type="xsd:string" required="true()"/>
+    <xforms:bind ref="my:option3" type="xsd:string" required="true()"/>
     <!--<xforms:submission action="myTool.py" method="exec-double-dash" />-->
     <XternalApps:command medhod="exec" style="double-dash">
       <XternalApps:exception ref="my:svgfile" style="pipe" />

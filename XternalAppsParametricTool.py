@@ -4,7 +4,11 @@ import FreeCADGui
 from lxml import etree
 import ExternalAppsList
 from ToolXML import *
+from collections import namedtuple
 import re
+
+XFormsInput = namedtuple('XFormsInput', ['input', 'modelElement', 'type', 'maybeEnum'])
+XFormsEnum = namedtuple('XFormsEnum', ['labels', 'values'])
 
 def CreateCommand(appName, toolName):
     App.ActiveDocument.openTransaction('Create parametric %s from %s'%(toolName, appName))
@@ -25,10 +29,12 @@ typeToFreeCADTypeDict = {
     'xsd:string': 'App::PropertyString',
 }
 
-def typeToFreeCADType(type):
-    if type.startswith('mime:'):
+def typeToFreeCADType(type, maybeEnum):
+    if maybeEnum is not None:
+        return 'App::PropertyEnumeration'
+    elif type.startswith('mime:'):
         return MIMETypeToFreeCADType(MIMEType[5:])
-    if type in typeToFreeCADTypeDict:
+    elif type in typeToFreeCADTypeDict:
         return typeToFreeCADTypeDict[type]
     else:
         raise ArgumentException('Unsupported XForms type')
@@ -47,10 +53,24 @@ class XternalAppsParametricTool():
         obj.Proxy = self
         self.createPropertiesFromXML(obj)
 
+    def interpretFormElement(self, xmlXFormsElement, xml, instanceDocument, types):
+        # TODO: is it safe to pass input unprotected here?
+        modelElement = instanceDocument.find(xmlXFormsElement.attrib['ref'],
+                                             namespaces=xmlXFormsElement.nsmap)
+        if modelElement is None:
+            raise Exception('Could not find ' + xmlXFormsElement.attrib['ref'] \
+                            + ' in instance document with namespaces=' + repr(xmlXFormsElement.nsmap))
+        type = types.get(instanceDocument.getpath(modelElement))
+        if type is None:
+            raise Exception('Could not find type for ' + instanceDocument.getpath(modelElement))
+        path = xml.getpath(xmlXFormsElement)
+        return (path, xmlXFormsElement, modelElement, type)
+
     def interpretXML(self):
-        """Parse the self.Tool.XForms document, and return the parsed xml,
-        a dictionary types[path] = "type", and a dictionary
-        inputs[path] = (xml_input_element, xml_model_element, type)."""
+        """Parse the self.Tool.XForms document, and return
+        * the parsed xml,
+        * a dictionary types[path] = "type"
+        * a dictionary inputs[path] = (xml_input_element, xml_model_element, type)."""
         types = {}
         modelInstance = {}
         inputs = {}
@@ -77,24 +97,33 @@ class XternalAppsParametricTool():
         # register all inputs to inputs[pathToElement]
         for group in xml.findall('./xforms:group', ns):
             for input in group.findall('./xforms:input', ns):
-                # TODO: is it safe to pass input unprotected here?
-                modelElement = instanceDocument.find(input.attrib['ref'], namespaces=input.nsmap)
-                if modelElement is None:
-                    raise Exception('Could not find ' + input.attrib['ref'] \
-                                    + ' in instance document with namespaces=' + repr(input.nsmap))
-                type = types[instanceDocument.getpath(modelElement)]
-                inputs[xml.getpath(input)] = (input, modelElement, type)
+                path, xmlXFormsElement, modelElement, type = self.interpretFormElement(input, xml, instanceDocument, types)
+                inputs[path] = XFormsInput(input=xmlXFormsElement, modelElement=modelElement, type=type, maybeEnum=None)
+            for select1 in group.findall('./xforms:select1', ns):
+                path, xmlXFormsElement, modelElement, type = self.interpretFormElement(select1, xml, instanceDocument, types)
+                # Gather the allowed elements for the enum
+                enum = {}
+                for item in select1.findall('./xforms:item', ns):
+                  enum[item.attrib['label']] = item.attrib['value']
+                inputs[path] = XFormsInput(input=xmlXFormsElement, modelElement=modelElement, type=type, maybeEnum=enum)
         return (xml, types, modelInstance, inputs)
+
+    def toSimpleName(self, name):
+        return re.sub(r'( |[^-a-zA-Z0-9])+', ' ', name).title().replace(' ', '')
 
     def createPropertiesFromXML(self, obj):
         xml, types, modelInstance, inputs = self.interpretXML()
-        for (input, modelElement, type) in inputs.values():
-            simpleName = re.sub(r'( |[^-a-zA-Z0-9])+', ' ', input.attrib['label']).title().replace(' ', '')
+        for (input, modelElement, type, maybeEnum) in inputs.values():
+            simpleName = self.toSimpleName(input.attrib['label'])
             group = "/".join(input.xpath('ancestor-or-self::xforms:group/xforms:label/text()', namespaces=ns)) or None
-            obj.addProperty(typeToFreeCADType(type),
+            print((simpleName, typeToFreeCADType(type, maybeEnum), maybeEnum))
+            obj.addProperty(typeToFreeCADType(type, maybeEnum),
                             simpleName,
                             group,
                             input.attrib['label'] + '\nA value of type ' + type)
+            if maybeEnum is not None:
+                setattr(obj, simpleName, [self.toSimpleName(k) for k in maybeEnum.keys()])
+                # TODO: have a converter from the labels to the values
 
     @property
     def Tool(self):
