@@ -12,8 +12,8 @@
     <xforms:instance>
       <my:tool>
         <my:svgfile/>
-        <my:option1/>
-        <my:option2>default value</my:option2>
+        <my:option1>default value</my:option1>
+        <my:option2/>
         <my:option3>bar</my:option3>
       </my:tool>
     </xforms:instance>
@@ -22,8 +22,8 @@
     -->
     <!-- use XternalApps:pipe to have the file piped directly into the command being run -->
     <xforms:bind ref="my:svgfile" type="mime:image/svg+xml" required="true()"/>
-    <xforms:bind ref="my:option1" type="xsd:decimal" required="true()"/>
-    <xforms:bind ref="my:option2" type="xsd:string" required="true()"/>
+    <xforms:bind ref="my:option1" type="xsd:string" required="true()"/>
+    <xforms:bind ref="my:option2" type="xsd:decimal" required="true()"/>
     <xforms:bind ref="my:option3" type="xsd:string" required="true()"/>
     <!--<xforms:submission action="myTool.py" method="exec-double-dash" />-->
     <XternalApps:command medhod="exec" style="double-dash">
@@ -47,6 +47,10 @@
     <xforms:select1 ref="my:option3" label="Option Three">
       <xforms:item label="Foo label" value="foo"/>
       <xforms:item label="Bar label" value="bar"/>
+    </xforms:select1>
+    <xforms:select1 ref="my:option3" label="Option Three (alt labels)">
+      <xforms:item label="Alt foo label" value="foo"/>
+      <xforms:item label="ALt bar label" value="bar"/>
     </xforms:select1>
   </xforms:group>
 </XternalApps:tool>
