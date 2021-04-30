@@ -1,6 +1,6 @@
 import sys
 
-import ExternalAppsList
+import XternalAppsList
 
 import StealSplash
 StealSplash.steal()
@@ -46,27 +46,30 @@ class XternalAppsWorkbench(Workbench):
     """Subclasses must implement the appName attribute"""
     global myIcon
     global XternalAppsWorkbench
-    global ExternalAppsList
+    global XternalAppsList
 
     def __init__(self):
         self.MenuText = "XternalApps: " + self.appName
         self.ToolTip = "Embeds " + self.appName + " in FreeCAD"
-        self.Icon = ExternalAppsList.apps[self.appName].Icon
+        self.Icon = XternalAppsList.apps[self.appName].Icon
         super(XternalAppsWorkbench, self).__init__()
 
     def Initialize(self):
         # Load commands
         import AppCommand
         import ToolCommand
+        import ReloadCommand
         import Embed
-        Embed.ExternalApps()
+        Embed.XternalApps()
         AppCommand.createCommands(self.appName)
         ToolCommand.createCommands(self.appName)
+        ReloadCommand.createCommands(self.appName)
 
         # List of commands for this workbench
-        self.list = ['ExternalAppsOpen' + self.appName + 'Command'] \
-                    + ['ExternalAppsTool' + self.appName + toolName + 'Command'
-                       for toolName in ExternalAppsList.apps[self.appName].Tools]
+        self.list = ['XternalAppsOpen' + self.appName + 'Command'] \
+                    + ['XternalAppsReload' + self.appName + 'Command'] \
+                    + ['XternalAppsTool' + self.appName + toolName + 'Command'
+                       for toolName in XternalAppsList.apps[self.appName].Tools]
 
         # Create menus and toolbars
         self.appendMenu("ExternalApplications", self.list)
@@ -90,5 +93,5 @@ def addAppWorkbench(appName):
         (XternalAppsWorkbench,), { 'appName': appName })
     Gui.addWorkbench(workbenchClass())
 
-for appName in ExternalAppsList.apps:
+for appName in XternalAppsList.apps:
     addAppWorkbench(appName)

@@ -6,7 +6,7 @@ import re
 from PySide import QtGui
 from PySide import QtCore
 
-import ExternalAppsList
+import XternalAppsList
 
 def x11stillAlive(windowId):
     try:

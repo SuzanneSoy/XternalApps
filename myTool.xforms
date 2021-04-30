@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<XternalApps:tool xmlns:my="http://github.com/jsmaniac/XternalApps/myTool" xmlns:XternalApps="http://github.com/jsmaniac/XternalApps" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<XternalApps:tool xmlns:my="http://github.com/jsmaniac/XternalApps/myTool" xmlns:XternalApps="http://github.com/jsmaniac/XternalApps/v1" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <XternalApps:name>MyTool</XternalApps:name>
   <XternalApps:tooltip>This tool is my tool, it is very useful in a toolset.</XternalApps:tooltip>
   <XternalApps:icon>MyTool.svg</XternalApps:icon>
@@ -24,12 +24,20 @@
     <xforms:bind ref="my:svgfile" type="mime:image/svg+xml" required="true()"/>
     <xforms:bind ref="my:option1" type="xsd:string" required="true()"/>
     <xforms:bind ref="my:option2" type="xsd:decimal" required="true()"/>
-    <xforms:bind ref="my:option3" type="xsd:string" required="true()"/>
+    <xforms:bind ref="my:option3" type="my:enum-option3" required="true()"/>
     <!--<xforms:submission action="myTool.py" method="exec-double-dash" />-->
     <XternalApps:command medhod="exec" style="double-dash">
       <XternalApps:exception ref="my:svgfile" style="pipe" />
       <XternalApps:returns style="pipe" type="image/svg+xml" />
     </XternalApps:command>
+    <xsd:schema targetNamespace="http://github.com/jsmaniac/XternalApps/myTool" xmlns:my="http://github.com/jsmaniac/XternalApps/myTool">
+      <xsd:simpleType name="enum-option3">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="foo" />
+          <xsd:enumeration value="bar" />
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:schema>
   </xforms:model>
   <!-- Description of the user interface follows: -->
   <xforms:group>
@@ -50,7 +58,7 @@
     </xforms:select1>
     <xforms:select1 ref="my:option3" label="Option Three (alt labels)">
       <xforms:item label="Alt foo label" value="foo"/>
-      <xforms:item label="ALt bar label" value="bar"/>
+      <xforms:item label="Alt bar label" value="bar"/>
     </xforms:select1>
   </xforms:group>
 </XternalApps:tool>

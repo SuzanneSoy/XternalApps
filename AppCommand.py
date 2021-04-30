@@ -5,7 +5,7 @@ import PySide
 from PySide import QtGui
 from PySide import QtCore
 
-import ExternalAppsList
+import XternalAppsList
 import Embed
 
 class AppCommand():
@@ -14,7 +14,7 @@ class AppCommand():
 
     def GetResources(self):
         return {
-            'Pixmap':   ExternalAppsList.apps[self.appName].Icon,
+            'Pixmap':   XternalAppsList.apps[self.appName].Icon,
             'Accel':    "Shit+E", # E for Embed
             'MenuText': "Start " + self.appName,
             'ToolTip':  "Start " + self.appName,
@@ -29,4 +29,5 @@ class AppCommand():
         return True
 
 def createCommands(appName):
-    Gui.addCommand('ExternalAppsOpen' + appName + 'Command', AppCommand(appName))
+    Gui.addCommand('XternalAppsOpen' + appName + 'Command', AppCommand(appName))
+

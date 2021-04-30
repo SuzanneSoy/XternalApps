@@ -7,8 +7,8 @@ def getSingletonFromXML(xml, path):
         return elem
 
 ns={
-#  'my':"http://github.com/jsmaniac/XternalApps/myTool",
-  'XternalApps':"http://github.com/jsmaniac/XternalApps",
+  'my':"http://github.com/jsmaniac/XternalApps/myTool",
+  'XternalApps':"http://github.com/jsmaniac/XternalApps/v1",
   'xforms':"http://www.w3.org/2002/xforms",
   'xsd':"http://www.w3.org/2001/XMLSchema",
 }

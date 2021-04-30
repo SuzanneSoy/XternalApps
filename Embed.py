@@ -6,7 +6,7 @@ import re
 from PySide import QtGui
 from PySide import QtCore
 
-import ExternalAppsList
+import XternalAppsList
 from MyX11Utils import *
 
 #class MyMdiSubWindow(QMdiSubWindow):
@@ -107,9 +107,9 @@ def try_pipe_lines(commandAndArguments):
         return []
 
 # TODO: this is just a quick & dirty way to attach a field to the FreeCad object
-class ExternalApps():
+class XternalApps():
     def __init__(self):
-        setattr(FreeCAD, 'ExternalApps', self)
+        setattr(FreeCAD, 'XternalApps', self)
 
 def deleted(widget):
     """Detect RuntimeError: Internal C++ object (PySide2.QtGui.QWindow) already deleted."""
@@ -122,7 +122,7 @@ def deleted(widget):
 class ExternalAppInstance(QtCore.QObject):
     def __init__(self, appName):
         super(ExternalAppInstance, self).__init__()
-        self.app = ExternalAppsList.apps[appName]
+        self.app = XternalAppsList.apps[appName]
         # Start the application
         # TODO: popen_process shouldn't be exposed to in-document scripts, it would allow them to redirect output etc.
         print('Starting ' + ' '.join(self.app.start_command_and_args))
@@ -131,7 +131,7 @@ class ExternalAppInstance(QtCore.QObject):
         self.initWaitForWindow()
         self.foundWindows = dict()
         self.closedWindows = dict()
-        setattr(FreeCAD.ExternalApps, self.app.name, self)
+        setattr(FreeCAD.XternalApps, self.app.name, self)
 
     def initWaitForWindow(self):
         self.TimeoutHasOccurred  = False # for other scritps to know the status

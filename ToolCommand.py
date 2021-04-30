@@ -5,13 +5,13 @@ import PySide
 from PySide import QtGui
 from PySide import QtCore
 
-import ExternalAppsList
+import XternalAppsList
 import Embed
 import XternalAppsParametricTool
 
 class ToolCommand():
     def __init__(self, appName, toolName):
-        self.Tool = ExternalAppsList.apps[appName].Tools[toolName]
+        self.Tool = XternalAppsList.apps[appName].Tools[toolName]
 
     def GetResources(self):
         return {
@@ -29,5 +29,5 @@ class ToolCommand():
         return FreeCAD.ActiveDocument is not None
 
 def createCommands(appName):
-    for toolName in ExternalAppsList.apps[appName].Tools:
-        Gui.addCommand('ExternalAppsTool' + appName + toolName + 'Command', ToolCommand(appName, toolName))
+    for toolName in XternalAppsList.apps[appName].Tools:
+        Gui.addCommand('XternalAppsTool' + appName + toolName + 'Command', ToolCommand(appName, toolName))
