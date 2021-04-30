@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XternalApps:tool xmlns:my="http://github.com/jsmaniac/XternalApps/myTool"
+    		  xmlns:XternalApps="http://github.com/jsmaniac/XternalApps"
+    		  xmlns:xforms="http://www.w3.org/2002/xforms"
+    		  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+              xmlns:xi="http://www.w3.org/2001/XInclude">
+    <xi:include href="myTool.metadata.xml">
+    <xi:include href="myTool.input-model.xml">
+    <xi:include href="myTool.input-form.xml">
+    <xi:include href="myTool.command.xml">
+    <xi:include href="myTool.output-model.xml">
+    <xi:include href="myTool.output-form.xml">
+</XternalApps:tool>

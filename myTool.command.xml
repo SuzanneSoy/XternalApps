@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XternalApps:command xmlns:my="http://github.com/jsmaniac/XternalApps/myTool"
+    		  xmlns:XternalApps="http://github.com/jsmaniac/XternalApps"
+    		  xmlns:xforms="http://www.w3.org/2002/xforms"
+    		  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <XternalApps:method>exec</XternalApps:method>
+    <XternalApps:accepts>
+        <!-- Default parameter-passing style -->
+        <XternalApps:default ref=".//*" style="double-dash">
+        <!-- Exceptions -->
+        <XternalApps:exception ref="my:svgfile" style="pipe" />
+    </XternalApps:accepts>
+    <XternalApps:returns>
+        <!-- This example does not use a default output-returning style -->
+        <!-- Exceptions -->
+        <XternalApps:exception ref="my:output-svgfile" style="pipe" />
+        <XternalApps:exception ref="my:output-exitcode" style="exitcode" />
+    </XternalApps:returns>
+</XternalApps:command>

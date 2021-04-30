@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XternalApps:input-form xmlns:my="http://github.com/jsmaniac/XternalApps/myTool"
+    		  xmlns:XternalApps="http://github.com/jsmaniac/XternalApps"
+    		  xmlns:xforms="http://www.w3.org/2002/xforms"
+    		  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xforms:group>
+        <xforms:label>Page 1</xforms:label>
+        <xforms:input ref="my:option1" label="Option One ∀"/>
+        <xforms:input ref="my:option2" label="Option Two π"/>
+        <xforms:upload ref="my:svgfile" accept="image/svg+xml">
+            <xforms:label>Input image</xforms:label>
+            <xforms:filename ref="@filename" />
+        </xforms:upload>
+    </xforms:group>
+    <xforms:group>
+        <xforms:label>Page 2</xforms:label>
+        <xforms:input ref="my:option2" label="Option Two"/>
+        <xforms:select1 ref="my:option3" label="Option Three">
+            <xforms:item label="Foo label" value="foo"/>
+            <xforms:item label="Bar label" value="bar"/>
+        </xforms:select1>
+    </xforms:group>
+</XternalApps:input-form>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XternalApps:metadata xmlns:my="http://github.com/jsmaniac/XternalApps/myTool"
+    		  xmlns:XternalApps="http://github.com/jsmaniac/XternalApps"
+    		  xmlns:xforms="http://www.w3.org/2002/xforms"
+    		  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <XternalApps:name>MyTool</XternalApps:name>
+    <XternalApps:tooltip>This tool is my tool, it is very useful in a toolset.</XternalApps:tooltip>
+    <XternalApps:icon>MyTool.svg</XternalApps:icon>
+    <XternalApps:extended-description>
+        Lots of text,
+        blah blha bhal
+    </XternalApps:extended-description>
+</XternalApps:metadata>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XternalApps:input-model xmlns:my="http://github.com/jsmaniac/XternalApps/myTool"
+            xmlns:XternalApps="http://github.com/jsmaniac/XternalApps"
+            xmlns:xforms="http://www.w3.org/2002/xforms"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xforms:model>
+        <xforms:instance>
+            <my:tool>
+                <my:svgfile/>
+                <my:option1/>
+                <my:option2>default value</my:option2>
+                <my:option3>bar</my:option3>
+            </my:tool>
+        </xforms:instance>
+        <xforms:bind ref="my:svgfile" type="mime:image/svg+xml" required="true()"/>
+        <xforms:bind ref="my:option1" type="xsd:decimal" required="true()"/>
+        <xforms:bind ref="my:option2" type="xsd:string" required="true()"/>
+    </xforms:model>
+</XternalApps:input-model>
