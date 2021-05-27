@@ -75,6 +75,7 @@ apps = Apps(
         extra_xprop_filter = lambda processId, windowId, i: x11prop(windowId, 'WM_STATE',  'WM_STATE') is not None,
         tools = [
             "myTool.xforms"
+            # TODO: generate them from """"inkscape --extension-directory"""
         ]),
     App('GIMP',
         start_command_and_args = ['env', '-i', 'DISPLAY=:0', '/home/suzanne/perso/dotfiles/nix/result/bin/gimp', '--new-instance'],

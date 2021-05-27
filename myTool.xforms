@@ -11,7 +11,7 @@
   <xforms:model>
     <xforms:instance>
       <my:tool>
-        <my:svgfile/>
+        <my:svgfile filename="" />
         <my:option1>default value</my:option1>
         <my:option2/>
         <my:option3>bar</my:option3>
@@ -26,10 +26,6 @@
     <xforms:bind ref="my:option2" type="xsd:decimal" required="true()"/>
     <xforms:bind ref="my:option3" type="my:enum-option3" required="true()"/>
     <!--<xforms:submission action="myTool.py" method="exec-double-dash" />-->
-    <XternalApps:command medhod="exec" style="double-dash">
-      <XternalApps:exception ref="my:svgfile" style="pipe" />
-      <XternalApps:returns style="pipe" type="image/svg+xml" />
-    </XternalApps:command>
     <xsd:schema targetNamespace="http://github.com/jsmaniac/XternalApps/myTool" xmlns:my="http://github.com/jsmaniac/XternalApps/myTool">
       <xsd:simpleType name="enum-option3">
         <xsd:restriction base="xsd:string">
@@ -39,12 +35,24 @@
       </xsd:simpleType>
     </xsd:schema>
   </xforms:model>
+
+  <XternalApps:command method="exec" name="/home/suzanne/perso/projects/paper-craft/py/Mod/XternalApps/myTool.py">
+    <XternalApps:accepts>
+      <XternalApps:default style="double-dash" />
+      <XternalApps:exception ref="my:svgfile" style="pipe" />
+    </XternalApps:accepts>
+    <XternalApps:returns>
+      <XternalApps:exception ref="my:output-svgfile" style="pipe" />
+      <XternalApps:exception ref="my:output-exitcode" style="exitcode" />
+    </XternalApps:returns>
+  </XternalApps:command>
+
   <!-- Description of the user interface follows: -->
   <xforms:group>
     <xforms:label>Page 1</xforms:label>
     <xforms:input ref="my:option1" label="Option One ∀"/>
     <xforms:input ref="my:option2" label="Option Two π"/>
-    <xforms:upload ref="my:svgfile" accept="image/svg+xml">
+    <xforms:upload ref="my:svgfile" accept="image/svg+xml" XternalApps:relevance="primary">
       <xforms:label>Input image</xforms:label>
       <xforms:filename ref="@filename" />
     </xforms:upload>
