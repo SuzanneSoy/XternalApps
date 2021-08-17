@@ -21,7 +21,7 @@ class AppCommand():
         }
 
     def Activated(self):
-        p = Embed.ExternalAppInstance(self.appName)
+        p = Embed.XternalAppInstance(self.appName)
         p.waitForWindow()
 
     def IsActive(self):

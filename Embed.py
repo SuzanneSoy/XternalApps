@@ -13,10 +13,10 @@ from MyX11Utils import *
 #    def closeEvent
 
 class EmbeddedWindow(QtCore.QObject):
-    def __init__(self, app, externalAppInstance, processId, windowId):
+    def __init__(self, app, xternalAppInstance, processId, windowId):
         super(EmbeddedWindow, self).__init__()
         self.app = app
-        self.externalAppInstance = externalAppInstance
+        self.xternalAppInstance = xternalAppInstance
         self.processId = processId
         self.windowId = windowId
         self.mdi = Gui.getMainWindow().findChild(QtGui.QMdiArea)
@@ -66,12 +66,12 @@ class EmbeddedWindow(QtCore.QObject):
                 self.xwd.setParent(None)
                 self.timer.stop()
                 # remove from dictionary of found windows
-                self.externalAppInstance.foundWindows.pop(self.windowId, None)
+                self.xternalAppInstance.foundWindows.pop(self.windowId, None)
                 # avoid GC
-                self.externalAppInstance.closedWindows[self.windowId] = self
+                self.xternalAppInstance.closedWindows[self.windowId] = self
                 # re-attach in case it didn't close (confirmation dialog etc.)
                 print('waitForWindow')
-                self.externalAppInstance.waitForWindow()
+                self.xternalAppInstance.waitForWindow()
 #                try:
 #                    self.xw = QtGui.QWindow.fromWinId(self.windowId)
 #                    self.xwd = QtGui.QWidget.createWindowContainer(self.xw)
@@ -119,9 +119,9 @@ def deleted(widget):
     except:
         return True
 
-class ExternalAppInstance(QtCore.QObject):
+class XternalAppInstance(QtCore.QObject):
     def __init__(self, appName):
-        super(ExternalAppInstance, self).__init__()
+        super(XternalAppInstance, self).__init__()
         self.app = XternalAppsList.apps[appName]
         # Start the application
         # TODO: popen_process shouldn't be exposed to in-document scripts, it would allow them to redirect output etc.

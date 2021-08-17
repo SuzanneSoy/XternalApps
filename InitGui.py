@@ -72,8 +72,8 @@ class XternalAppsWorkbench(Workbench):
                        for toolName in XternalAppsList.apps[self.appName].Tools]
 
         # Create menus and toolbars
-        self.appendMenu("ExternalApplications", self.list)
-        self.appendToolbar("ExternalApplications", self.list)
+        self.appendMenu("XternalApplications", self.list)
+        self.appendToolbar("XternalApplications", self.list)
 
     def Activated(self):
         pass

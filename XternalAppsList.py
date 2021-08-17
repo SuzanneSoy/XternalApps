@@ -30,7 +30,7 @@ class Tool():
         return Tool(appName=appName,
                     toolName = getSingletonFromXML(xml, './XternalApps:name').text,
                     xForms = xForms,
-                    toolTip = getSingletonFromXML(xml, './XternalApps:tooltip').text,
+                    toolTip = getSingletonFromXML(xml, './XternalApps:tooltip').text or '',
                     icon = os.path.dirname(__file__) + '/icons/' + appName + '/' + getSingletonFromXML(xml, './XternalApps:icon').text,
                     extendedDescription = getSingletonFromXML(xml, './XternalApps:extended-description').text,
                     openHelpFile = None)

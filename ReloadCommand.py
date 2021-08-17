@@ -26,7 +26,7 @@ class ReloadCommand():
     def GetResources(self):
         return {
             'Pixmap':   os.path.dirname(__file__) + '/icons/' + "reload.svg",
-            'Accel':    "Shit+R", # R for Reload
+            'Accel':    "Ctrl+R", # R for Reload
             'MenuText': "Reload XternalApps (developper tool)",
             'ToolTip':  "Reload some modules of the XternalApps workbenches, needed for development only.",
         }

@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <XternalApps:tool xmlns:my="http://github.com/jsmaniac/XternalApps/myTool" xmlns:XternalApps="http://github.com/jsmaniac/XternalApps/v1" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <XternalApps:name>MyTool</XternalApps:name>
-  <XternalApps:tooltip>This tool is my tool, it is very useful in a toolset.</XternalApps:tooltip>
+  <XternalApps:name>Fractalize</XternalApps:name>
+  <XternalApps:tooltip></XternalApps:tooltip>
   <XternalApps:icon>MyTool.svg</XternalApps:icon>
   <XternalApps:extended-description>
-    Lots of text,
-    blah blha bhal
   </XternalApps:extended-description>
   <!-- Internal model and default values follow: -->
   <xforms:model>
     <xforms:instance>
       <my:tool>
         <my:svgfile filename="" />
-        <my:option1>default value</my:option1>
-        <my:option2/>
-        <my:option3>bar</my:option3>
+        <my:subdivs>6</my:subdivs>
+        <my:smooth>4.0</my:smooth>
       </my:tool>
     </xforms:instance>
     <!-- to get a filename on the command-line, use:
@@ -22,51 +19,27 @@
     -->
     <!-- use XternalApps:pipe to have the file piped directly into the command being run -->
     <xforms:bind ref="my:svgfile" type="mime:image/svg+xml" required="true()"/>
-    <xforms:bind ref="my:option1" type="xsd:string" required="true()"/>
-    <xforms:bind ref="my:option2" type="xsd:decimal" required="true()"/>
-    <xforms:bind ref="my:option3" type="my:enum-option3" required="true()"/>
+    <xforms:bind ref="my:subdivs" type="xsd:integer" required="true()"/>
+    <xforms:bind ref="my:smooth" type="xsd:decimal" required="true()"/>
     <!--<xforms:submission action="myTool.py" method="exec-double-dash" />-->
-    <xsd:schema targetNamespace="http://github.com/jsmaniac/XternalApps/myTool" xmlns:my="http://github.com/jsmaniac/XternalApps/myTool">
-      <xsd:simpleType name="enum-option3">
-        <xsd:restriction base="xsd:string">
-          <xsd:enumeration value="foo" />
-          <xsd:enumeration value="bar" />
-        </xsd:restriction>
-      </xsd:simpleType>
-    </xsd:schema>
   </xforms:model>
 
-  <XternalApps:command method="exec" name="/home/suzanne/perso/projects/paper-craft/py/Mod/XternalApps/myTool.py">
-    <XternalApps:accepts>
-      <XternalApps:default style="double-dash" />
-      <XternalApps:exception ref="my:svgfile" style="pipe" />
-    </XternalApps:accepts>
-    <XternalApps:returns>
-      <XternalApps:exception ref="my:output-svgfile" style="pipe" />
-      <XternalApps:exception ref="my:output-exitcode" style="exitcode" />
-    </XternalApps:returns>
+  <XternalApps:command method="exec" name="/home/suzanne/perso/projects/paper-craft/py/Mod/XternalApps/run-inkscape-plugin.py">
+    <XternalApps:constant  direction="input"  value="fractalize.py"    style="value" />
+    <XternalApps:default   direction="input"                           style="double-dash" />
+    <XternalApps:exception direction="input"  ref="my:svgfile"         style="value" />
+    <XternalApps:exception direction="output" ref="my:output-svgfile"  style="pipe" />
+    <XternalApps:exception direction="output" ref="my:output-exitcode" style="exitcode" />
   </XternalApps:command>
 
   <!-- Description of the user interface follows: -->
   <xforms:group>
-    <xforms:label>Page 1</xforms:label>
-    <xforms:input ref="my:option1" label="Option One ∀"/>
-    <xforms:input ref="my:option2" label="Option Two π"/>
+    <xforms:label>Fractalize</xforms:label>
+    <xforms:input ref="my:subdivs" label="Subdivisions"/>
+    <xforms:input ref="my:smooth" label="Smoothness"/>
     <xforms:upload ref="my:svgfile" accept="image/svg+xml" XternalApps:relevance="primary">
-      <xforms:label>Input image</xforms:label>
+      <xforms:label>Input path</xforms:label>
       <xforms:filename ref="@filename" />
     </xforms:upload>
-  </xforms:group>
-  <xforms:group>
-    <xforms:label>Page 2</xforms:label>
-    <xforms:input ref="my:option2" label="Option Two"/>
-    <xforms:select1 ref="my:option3" label="Option Three">
-      <xforms:item label="Foo label" value="foo"/>
-      <xforms:item label="Bar label" value="bar"/>
-    </xforms:select1>
-    <xforms:select1 ref="my:option3" label="Option Three (alt labels)">
-      <xforms:item label="Alt foo label" value="foo"/>
-      <xforms:item label="Alt bar label" value="bar"/>
-    </xforms:select1>
   </xforms:group>
 </XternalApps:tool>
